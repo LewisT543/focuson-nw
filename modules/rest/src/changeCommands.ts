@@ -1,6 +1,7 @@
 import { identityOptional, Optional, replaceTextFn, Transform } from "@focuson-nw/lens";
 import { TagHolder } from "@focuson-nw/template";
 import { anyIntoPrimitive, CopyDetails, DateFn, filterObject, PageMode, RestAction, SimpleMessageLevel, toArray } from "@focuson-nw/utils";
+import { PageSelection } from "@focuson-nw/pages";
 
 
 export interface ChangeCommand {
@@ -22,6 +23,19 @@ export const isCloseCurrentWindowCommand = ( c: ChangeCommand ): c is CloseCurre
 export function closeCurrentWindowCommandProcessor<S, C extends HasCloseOnePage<S, C>> ( s: S, optionalForPath: Optional<S, any>|undefined, context: C ): ChangeCommandProcessor<S> {
   return c => isCloseCurrentWindowCommand ( c ) ? context.closeOnePageTxs ( `closeCurrentWindowCommandProcessor`, s, optionalForPath, context, [] ) : undefined
 }
+
+export interface CloseAllModalPagesCommand extends ChangeCommand {
+  command: 'closeAllModalPages'
+}
+export const isCloseAllModalPagesCommand = ( c: ChangeCommand ): c is CloseAllModalPagesCommand => c.command === 'closeAllModalPages'
+
+export function closeAllModalPagesCommandProcessor<S> (pageSelectionL: Optional<S, PageSelection[]>): ChangeCommandProcessor<S> {
+  return c => isCloseAllModalPagesCommand(c) ? [ [ pageSelectionL, old => {
+    console.log(old[0])
+    return [old[0]]
+  } ] ] : undefined
+}
+
 
 export interface ScrollToTopCommand extends ChangeCommand {
   command: 'scrollToTop'
@@ -265,8 +279,7 @@ export function processOpenMainPageCommandProcessor<S, PS extends MinimalPageSel
   return c => isOpenMainPageCommand ( c ) ? [ [ pageSelectionL, ps => [ ...ps, makePageSelection ( ps, c.page ) ] ] ] : undefined
 }
 
-
-type CommonCommands = DeleteCommand | MessageCommand | SetChangeCommand | DeleteAllMessages | TimeStampCommand | CopyJustStringsCommands | ScrollToTopCommand
+type CommonCommands = DeleteCommand | MessageCommand | SetChangeCommand | DeleteAllMessages | TimeStampCommand | CopyJustStringsCommands | ScrollToTopCommand | CloseAllModalPagesCommand
 export type RestChangeCommands = CommonCommands | CopyResultCommand | DeleteRestWindowCommand | OpenModalPageCommand | StrictCopyCommand | CloseCurrentWindowCommand
 export type ModalChangeCommands = CommonCommands | CopyCommand | OpenModalPageCommand | OpenMainPageCommand
 export type NewPageChangeCommands = CommonCommands | CopyCommand | DeletePageTagsCommand
@@ -304,9 +317,10 @@ export interface InputProcessorsConfig<S, MSGs, PS extends MinimalPageSelection,
 }
 
 export function commonProcessors<S, MSGs, PS extends MinimalPageSelection> ( config: DeleteMessageStrictCopySetProcessorsConfig<S, MSGs, PS> ): ChangeCommandProcessor<S> {
-  const { toPathTolens, messageL, dateFn } = config
+  const { toPathTolens, messageL, dateFn, pageSelectionL } = config
   return composeChangeCommandProcessors (
     processDeleteAllMessagesCommand ( messageL ),
+    closeAllModalPagesCommandProcessor ( pageSelectionL ),
     scrollToTopProcessor (),
     deleteCommandProcessor ( toPathTolens ),
     setCommandProcessor ( toPathTolens ),

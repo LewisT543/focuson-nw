@@ -1,16 +1,15 @@
-import { NameAnd, safeArray, unique } from "@focuson-nw/utils";
-import { CommonStateProps, InputOnChangeProps, LabelAlignment } from "./common";
-import { format, parse } from 'date-fns';
-import { LensState, reasonFor, SetJsonReasonEvent } from "@focuson-nw/state";
-import { HasPathToLens, ModalContext } from "@focuson-nw/pages";
-import { Label } from "./label";
-import { makeButtons } from "./makeButtons";
+import {NameAnd, safeArray, unique} from "@focuson-nw/utils";
+import {CommonStateProps, InputOnChangeProps, LabelAlignment} from "./common";
+import {format, parse} from 'date-fns';
+import {LensState, reasonFor, SetJsonReasonEvent} from "@focuson-nw/state";
+import {HasPathToLens, ModalContext} from "@focuson-nw/pages";
+import {Label} from "./label";
+import {makeButtons} from "./makeButtons";
 import ReactDatePicker from "react-datepicker";
-import { useEffect } from "react";
-import { CustomError, setEdited } from "./CustomError";
-import { Transform } from "@focuson-nw/lens";
-import { makeInputChangeTxs } from "./labelAndInput";
-import flip from '@popperjs/core/lib/modifiers/flip.js';
+import {useEffect} from "react";
+import {CustomError, setEdited} from "./CustomError";
+import {Transform} from "@focuson-nw/lens";
+import {makeInputChangeTxs} from "./labelAndInput";
 
 
 type DateFormat = string//'dd-MM/yyyy' | 'yyyy/MM/dd'
@@ -333,7 +332,6 @@ export function RawDatePicker<S extends any, C extends ModalContext<S>> ( select
                          className={dateError ? "red-border" : ""}
                          closeOnScroll={true}
                          onChangeRaw={onChangeRaw}
-                         popperModifiers={[flip]}
                          value={error ? value : undefined} // whats going on here? Well the value is read as a date. And the date picker might change it
                          placeholderText="Select a date"/>
         {makeButtons ( props )}
