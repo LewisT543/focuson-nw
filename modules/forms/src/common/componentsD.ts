@@ -180,6 +180,7 @@ export const DatePicker2CD: DisplayCompD = {
     showMonthYearPicker: { paramType: 'boolean', needed: 'no' },
     placeholder: { paramType: 'string', needed: 'no' },
     dateErrorMessage: { paramType: 'json', needed: 'no' },
+    isOnModalPage: { paramType: 'boolean', needed: 'no' }
   }
 }
 export const DatePickerForPaymentsCD: DisplayCompD = {

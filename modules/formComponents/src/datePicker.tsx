@@ -246,7 +246,8 @@ export interface DatePickerProps<S, C> extends CommonStateProps<S, string, C>, I
   dateRange?: DateRange<S, C>;
   jurisdiction?: LensState<S, string, C>;
   dateInfo?: LensState<S, any, C>;
-  dateErrorMessage?: DateErrorMessageOptionals
+  dateErrorMessage?: DateErrorMessageOptionals;
+  isOnModalPage?: boolean
 }
 
 export type DatePickerSelectFn = <S extends any, C extends ModalContext<S>>( debug: boolean, props: DatePickerProps<S, C> ) => ( eventName: SetJsonReasonEvent, date: string | undefined ) => void
@@ -270,7 +271,7 @@ function myformat ( e: any, dateFormat: string ) {
 }
 export function RawDatePicker<S extends any, C extends ModalContext<S>> ( selectFn: DatePickerSelectFn ) {
   return ( props: DatePickerProps<S, C> ) => {
-    const { state, jurisdiction, dateInfo, dateRange, name, label, id, mode, readonly, dateFormat, showMonthYearPicker, required, dateErrorMessage } = props
+    const { state, jurisdiction, dateInfo, dateRange, name, label, id, mode, readonly, dateFormat, showMonthYearPicker, required, dateErrorMessage, isOnModalPage } = props
     const main: any = state.main
     const debug = main?.debug?.dateDebug
 
@@ -309,6 +310,9 @@ export function RawDatePicker<S extends any, C extends ModalContext<S>> ( select
     }
     const errorFromValue = findErrorsFrom ( value )
     const dateError = errorFromValue.length > 0 ? unique(errorFromValue, e=>e).join ( ", " ) : undefined
+
+    const popperMods = isOnModalPage ? [ { name: 'flip', options: { fallbackPlacements: [ 'bottom' ] } } ] : []
+
     if ( debug ) console.log ( 'datePicker', id, 'value', value, 'date', date, 'errorFromValue', errorFromValue )
     const error = selectedDateErrors.length > 0 || (dateError !== undefined);
     //@ts-ignore - because react doesn't understand currying so thinks this isn't being called inside a function component
@@ -330,6 +334,7 @@ export function RawDatePicker<S extends any, C extends ModalContext<S>> ( select
                          highlightDates={holidays}
                          readOnly={mode === 'view' || readonly}
                          className={dateError ? "red-border" : ""}
+                         popperModifiers={popperMods}
                          closeOnScroll={true}
                          onChangeRaw={onChangeRaw}
                          value={error ? value : undefined} // whats going on here? Well the value is read as a date. And the date picker might change it

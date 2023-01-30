@@ -1,7 +1,30 @@
-import { ExampleDataD } from "../common";
-import { DateWithDatePickerDD, EndMonthYearFromRangeFromWithDatePickerDD, LabelAndMonthYearLengthDD, MonthYearWithDatePickerDD, StartMonthYearFromRangeFromWithDatePickerDD, StringDD } from "../../common/dataD";
-import { DatePickerForPaymentsCD, EndMonthYearDatePickerWithLengthCD, LayoutCd, StartMonthYearDatePickerWithLengthCD } from "../../common/componentsD";
-import { PaymentTypeDd } from "../payments/payments.dataD";
+import {ExampleDataD} from "../common";
+import {
+  DateWithDatePickerDD,
+  EndMonthYearFromRangeFromWithDatePickerDD,
+  LabelAndMonthYearLengthDD,
+  MonthYearWithDatePickerDD,
+  StartMonthYearFromRangeFromWithDatePickerDD
+} from "../../common/dataD";
+import {DatePickerForPaymentsCD, LayoutCd} from "../../common/componentsD";
+import {PaymentTypeDd} from "../payments/payments.dataD";
+
+export const datesPageModalWithDatepickerDD: ExampleDataD = {
+  description: "Datepicker in modal page to test popperJS snapping",
+  name: 'DatesPageModalWithDatepicker',
+  layout: { component: LayoutCd, displayParams: { details: '[[1]]' } },
+  structure: {
+    datepickerOnModalPage: {
+      dataDD: DateWithDatePickerDD,
+      displayParams: {
+        label: 'Future',
+        dateRange: { type: 'future' },
+        dateInfo: '/FocusonCommonData/dates',
+        isOnModalPage: true
+      }
+    },
+  }
+}
 
 export const datesDataD: ExampleDataD = {
   name: 'Dates',
@@ -20,7 +43,8 @@ export const datesDataD: ExampleDataD = {
       dataDD: DateWithDatePickerDD,
       displayParams: {
         dateRange: { type: 'future', allowWeekends: false, allowHolidays: false },
-        dateErrorMessage: { isWeekend: 'is a holiday' }
+        dateErrorMessage: { isWeekend: 'is a holiday' },
+        isOnModalPage: true
       }
     },
     past: { dataDD: DateWithDatePickerDD, displayParams: { label: 'Past', dateRange: { type: 'past' } } },

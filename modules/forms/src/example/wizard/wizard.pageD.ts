@@ -1,6 +1,7 @@
 import { ModalPageD } from "../../common/pageD";
 import { ExampleMainPage, ExampleModalPage } from "../common";
 import { nothingDD } from "../../common/commonDataDs";
+import {datesPageModalWithDatepickerDD} from "../dates/dates.dataD";
 
 const wizard4: ExampleModalPage = {
   pageType: 'ModalPopup',
@@ -43,8 +44,8 @@ const wizard2: ExampleModalPage = {
 }
 const wizard1: ExampleModalPage = {
   pageType: 'ModalPopup',
-  display: { dataDD: nothingDD, target: '~/nothing' },
-  modes: [ 'view' ],
+  display: { dataDD: datesPageModalWithDatepickerDD, target: '~/datepickerModal' },
+  modes: [ 'edit' ],
   name: "Wizard1",
   shouldModalPageCloseOnClickAway: true,
   haveTopRightCrossToCancel: true,
@@ -63,11 +64,12 @@ export const wizardPD: ExampleMainPage = {
   modes: [ 'view' ],
   modals: [ { modal: wizard1 }, { modal: wizard2 }, { modal: wizard3 }, { modal: wizard4 } ],
   domain: {
-    nothing: { dataDD: nothingDD }
+    nothing: { dataDD: nothingDD },
+    datepickerModal: { dataDD: datesPageModalWithDatepickerDD }
   },
   rest: {},
   buttons: {
-    start: { control: 'ModalButton', modal: wizard1, mode: 'view', focusOn: '~/nothing' },
+    start: { control: 'ModalButton', modal: wizard1, mode: 'edit', focusOn: '~/nothing' },
     selectDates: { control: 'SelectPage', pageMode: 'edit', pageName: 'Dates' }
   },
 }
