@@ -65,17 +65,19 @@ describe ( "selectedPage", () => {
   it ( "display loading when no data", () => {
     const state = lensStateWith ( rootState, () => {}, [ 'firstPage', 'edit', undefined ], [ 'secondPage', 'view', undefined ], [ 'modalData', 'edit', undefined ] )
     const comp = shallow ( <SelectedPage state={state}/> )
-    expect ( comp.html () ).toEqual ( '<div class="combine">' +
-      '<div class="focus-page"><div id="default_template"><h1>[firstPageTitle]:</h1>' +
-      '<div><p>Loading</p><span class="tooltip-wrap">' +
-      '<button class="button" id="loading.cancel" aria-errormessage="loading.cancel.error" aria-invalid="false">Cancel </button>' +
-      '<ul hidden="" class="errormessage tooltip" id="loading.cancel.error"></ul></span></div></div></div><div class="focus-page">' +
-      '<div id="default_template"><h1>[secondPageTitle]:</h1><div><p>Loading</p>' +
-      '<span class="tooltip-wrap"><button class="button" id="loading.cancel" aria-errormessage="loading.cancel.error" aria-invalid="false">Cancel </button>' +
-      '<ul hidden="" class="errormessage tooltip" id="loading.cancel.error"></ul></span></div></div></div>' +
-      '<div class="focus-page"><div id="default_template">' +
-      '<h1>[modalDataTitle]:</h1><p>modalData[x]/edit</p></div></div></div>' )
-
+    expect ( comp.html () ).toEqual ( '<div class=\"combine\"><div class=\"focus-page\">' +
+      '<div id=\"default_template\"><h1>[firstPageTitle]:</h1><div class=\"dialog loading\">' +
+      '<div class=\"wrapper wrapper-overlay\"><div class=\"content-block\"><div class=\"content-loader\">' +
+      '<div class=\"non-branded\"><div></div><div></div><div></div><div></div><div></div><div></div><div></div>' +
+      '<div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>' +
+      '<div class=\"content-text-block\"><div class=\"content-text\"><p>Please wait...</p></div></div></div></div></div></div>' +
+      '<div class=\"focus-page\"><div id=\"default_template\"><h1>[secondPageTitle]:</h1><div class=\"dialog loading\">' +
+      '<div class=\"wrapper wrapper-overlay\"><div class=\"content-block\"><div class=\"content-loader\"><div class=\"non-branded\">' +
+      '<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>' +
+      '<div></div><div></div><div></div><div></div><div></div></div></div></div><div class=\"content-text-block\">' +
+      '<div class=\"content-text\"><p>Please wait...</p></div></div></div></div></div></div><div class=\"focus-page\">' +
+      '<div id=\"default_template\"><h1>[modalDataTitle]:</h1><p>modalData[x]/edit</p></div></div></div>'
+    )
   } )
 } )
 

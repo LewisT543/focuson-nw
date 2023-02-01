@@ -69,7 +69,7 @@ describe ( 'tagFetcher', () => {
     const ns = await applyFetcher ( simpleFetcherWithMessages, start, fetchWithPrefix ( "http://localhost:9999", defaultFetchFn ) )
     expect ( ns.messages ).toEqual ( [ {
       "level": "error",
-      "msg": "Failed to fetch data from [/someUrl/t1/t2/?tag1Id=t1&tag2Id=t2,undefined] status 600\nResponse {\"message\":\"request to http://localhost:9999/someUrl/t1/t2/?tag1Id=t1&tag2Id=t2 failed, reason: connect ECONNREFUSED 127.0.0.1:9999\",\"type\":\"system\",\"errno\":\"ECONNREFUSED\",\"code\":\"ECONNREFUSED\"}}",
+      "msg": "Failed to fetch data from [/someUrl/t1/t2/?tag1Id=t1&tag2Id=t2,undefined] status 600\nResponse {\"message\":\"request to http://localhost:9999/someUrl/t1/t2/?tag1Id=t1&tag2Id=t2 failed, reason: connect ECONNREFUSED ::1:9999\",\"type\":\"system\",\"errno\":\"ECONNREFUSED\",\"code\":\"ECONNREFUSED\"}}",
       "time": "timeForTest"
     } ] )
   } )
