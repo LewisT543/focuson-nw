@@ -1,17 +1,6 @@
-import {ExampleMainPage, ExampleModalPage} from "../common";
-import {datesDataD, datesPageModalWithDatepickerDD} from "./dates.dataD";
+import {ExampleMainPage} from "../common";
+import {datesDataD} from "./dates.dataD";
 import {datesRestD} from "./dates.restD";
-
-
-const datesPageModal: ExampleModalPage = {
-  pageType: 'ModalPopup',
-  display: { dataDD: datesPageModalWithDatepickerDD, target: '~/datepickerModal' },
-  modes: [ 'edit' ],
-  name: "DatesPageModal",
-  buttons: {
-    cancel: { control: 'ModalCancelButton' },
-  },
-}
 
 export const DatesPageD: ExampleMainPage = {
   name: "Dates", pageType: 'MainPage',
@@ -34,6 +23,5 @@ export const DatesPageD: ExampleMainPage = {
   buttons: {
     validateButton: { control: "ValidationButton" },
     exampleButtonWithValidation: { control: 'RestButton', validate: true, restName: 'notUsed', action: 'get' },
-    openDatesModal: { control: 'ModalButton', modal: datesPageModal, buttonType: 'primary', mode: 'edit', focusOn: '~/datepickerModal' }
   }
 }

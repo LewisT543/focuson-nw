@@ -16,7 +16,7 @@ export interface StartMonthYearDatePickerWithLengthProps<S, C> extends DatePicke
 
 export function StartMonthYearDatePickerWithLength<S, C extends ModalContext<S>> ( props: StartMonthYearDatePickerWithLengthProps<S, C> ) {
   const { endDatePath, lengthPath, dateFormat, id, showMonthYearPicker } = props
-  if ( dateFormat !== 'MM-yyyy' ) throw new Error ( `The date picker with id ${id} has a dateformat '${dateFormat}'. It must be MM-yyyy` )
+  if ( dateFormat !== 'MM/yyyy' ) throw new Error ( `The date picker with id ${id} has a dateformat '${dateFormat}'. It must be MM/yyyy` )
   if ( !showMonthYearPicker ) throw new Error ( `The date picker with id ${id} doesn't have 'showMonthYearPicker' set to true` )
 
   function onCheck<S, C extends ModalContext<S>> ( debug: boolean, props: DatePickerProps<S, C> ) {
@@ -46,7 +46,7 @@ export interface EndMonthYearDatePickerWithLengthProps<S, C> extends DatePickerP
 
 export function EndMonthYearDatePickerWithLength<S, C extends ModalContext<S>> ( props: EndMonthYearDatePickerWithLengthProps<S, C> ) {
   const { startDatePath, lengthPath, dateFormat, id, showMonthYearPicker } = props
-  if ( dateFormat !== 'MM-yyyy' ) throw new Error ( `The date picker with id ${id} has a dateformat '${dateFormat}'. It must be MM-yyyy` )
+  if ( dateFormat !== 'MM/yyyy' ) throw new Error ( `The date picker with id ${id} has a dateformat '${dateFormat}'. It must be MM/yyyy` )
   if ( !showMonthYearPicker ) throw new Error ( `The date picker with id ${id} doesn't have 'showMonthYearPicker' set to true` )
 
   function onCheck<S, C extends ModalContext<S>> ( debug: boolean, props: DatePickerProps<S, C> ) {

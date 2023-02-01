@@ -67,8 +67,8 @@ export const datesDataD: ExampleDataD = {
       }
     },
     length: { dataDD: LabelAndMonthYearLengthDD, displayParams: { fromDate: 'startDate', toDate: 'endDate', onChange: { command: 'message', msg: 'length' } } },
-    startDate: { dataDD: StartMonthYearFromRangeFromWithDatePickerDD, displayParams: { endDatePath: 'endDate', lengthPath: 'length', onChange: { command: 'message', msg: 'startDate' } } },
-    endDate: { dataDD: EndMonthYearFromRangeFromWithDatePickerDD, displayParams: { startDatePath: 'startDate', lengthPath: 'length', onChange: { command: 'message', msg: 'endDate' } } },
+    startDate: { dataDD: StartMonthYearFromRangeFromWithDatePickerDD, displayParams: { endDatePath: 'endDate', lengthPath: 'length', onChange: { command: 'message', msg: 'startDate' }, dateFormat: 'MM/yyyy' } },
+    endDate: { dataDD: EndMonthYearFromRangeFromWithDatePickerDD, displayParams: { startDatePath: 'startDate', lengthPath: 'length', onChange: { command: 'message', msg: 'endDate' }, dateFormat: 'MM/yyyy' } },
     firstDate: { dataDD: DateWithDatePickerDD , displayParams: { dateRange: { type: 'future' }}},
     futureAfterFirstDate: { dataDD: DateWithDatePickerDD, displayParams: { dateRange: {type:'future', firstSelectableDatePath: '~/dates/firstDate' , allowWeekends: false}} },
     paymentType: { dataDD: PaymentTypeDd },
