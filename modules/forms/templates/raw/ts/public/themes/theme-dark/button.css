@@ -76,7 +76,6 @@ button:hover:after, .button:hover:after {
 .primary-btn:hover {
     top: 4px;
     left: 4px;
-    padding: 13px 28px 11px;
     text-decoration: underline !important;
     color: #fff;
     cursor: pointer;
@@ -141,8 +140,6 @@ button:hover:after, .button:hover:after {
     transform: scale(0.98);
     top: 4px;
     left: 4px;
-    border: 2px solid var(--button-secondary-border);
-    padding: 9px 26px 7px;
     text-decoration: underline !important;
 }
 
