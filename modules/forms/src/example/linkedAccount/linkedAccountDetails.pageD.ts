@@ -18,8 +18,17 @@ export const SelectMandateMP: ExampleModalPage = {
 
 export const CreatePaymentMP: ExampleModalPage = {
   name: "CreatePayment",
-
   buttons: {
+    condSet1: { control: "CommandButton", label: 'ConditionalSetButton(Equals)', command: [
+      { command: 'conditionalSet', path: '~/createPayment/newVal', value: 'setVal',
+        condition: { type: 'equals', condPath: '~/createPayment/tempForConditionalSet_1234', condVal:'1234' }
+      }
+    ] },
+    condSet2: { control: "CommandButton", label: 'ConditionalSetButton(NotEquals)', command: [
+      { command: 'conditionalSet', path: '~/createPayment/newVal', value: 'setVal',
+        condition: { type: 'notEquals', condPath: '~/createPayment/tempForConditionalSet_1234', condVal:'1234'}
+      }
+    ] },
     cancel: { control: 'ModalCancelButton' },
     commit: { control: 'ModalCommitButton', confirm: "Do you really want to create this payment?" },
     overpaymentHistory: {

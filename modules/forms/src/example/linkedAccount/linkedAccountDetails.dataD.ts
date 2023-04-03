@@ -109,6 +109,8 @@ export const CreatePaymentDD: ExampleDataD = {
   description: 'The data needed to make a payment',
   guards: { reasonIsAllowance: { condition: 'in', path: 'reason', values: paymentReasonDD.enum } },
   structure: {
+    "tempForConditionalSet_1234": { dataDD: StringDD, sample: [ '1234' ] },
+    newVal: { dataDD: StringDD },
     amount: { dataDD: MoneyStringDD, sample: [ '566.57', '328.34' ] },//, displayParams: { min: 200 } },
     collectionDate: { dataDD: DateDD },
     reason: { dataDD: paymentReasonDD },

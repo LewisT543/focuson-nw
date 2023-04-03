@@ -1,8 +1,6 @@
 import { identityOptional, Optional, replaceTextFn, Transform } from "@focuson-nw/lens";
 import { TagHolder } from "@focuson-nw/template";
 import { anyIntoPrimitive, CopyDetails, DateFn, filterObject, PageMode, RestAction, SimpleMessageLevel, toArray } from "@focuson-nw/utils";
-import { PageSelection } from "@focuson-nw/pages";
-
 
 export interface ChangeCommand {
   command: string
@@ -29,7 +27,7 @@ export interface CloseAllModalPagesCommand extends ChangeCommand {
 }
 export const isCloseAllModalPagesCommand = ( c: ChangeCommand ): c is CloseAllModalPagesCommand => c.command === 'closeAllModalPages'
 
-export function closeAllModalPagesCommandProcessor<S> (pageSelectionL: Optional<S, PageSelection[]>): ChangeCommandProcessor<S> {
+export function closeAllModalPagesCommandProcessor<S> (pageSelectionL: Optional<S, any[]>): ChangeCommandProcessor<S> {
   return c => isCloseAllModalPagesCommand(c) ? [ [ pageSelectionL, old => {
     console.log(old[0])
     return [old[0]]
@@ -102,16 +100,55 @@ const isSetCommand = ( c: ChangeCommand ): c is SetChangeCommand => c.command ==
 export const setCommandProcessor = <S> ( pathToLens: ( path: string ) => Optional<S, any> ): ChangeCommandProcessor<S> =>
   ( c ) => isSetCommand ( c ) ? [ [ pathToLens ( c.path ), () => c.value ] ] : undefined;
 
+export interface ConditionalSetChangeCommand extends ChangeCommand {
+  command: 'conditionalSet';
+  path: string;
+  value: any;
+  condition: Condition;
+}
+type Condition = EqualsCondition | NotEqualsCondition
+interface BaseCondition {
+  type: string;
+  condVal: any;
+}
+interface ConditionWithPath extends BaseCondition {  condPath: string; }
+interface EqualsCondition extends ConditionWithPath { type: 'equals' }
+interface NotEqualsCondition extends ConditionWithPath { type: 'notEquals' }
+
+const isConditionalSetCommand = ( c: ChangeCommand ): c is ConditionalSetChangeCommand => c.command === 'conditionalSet';
+const conditionMet = (cond: Condition, pathVal: any): boolean => {
+  const { type, condVal } = cond
+  console.log(`Set Command Condition Met: ${pathVal} == ${condVal} ->`, pathVal == condVal)
+  if (type === 'equals') return pathVal == condVal
+  if (type === 'notEquals') return pathVal != condVal
+  // Expand the chain of responsibility here if you need more conditions
+  return undefined
+}
+export const conditionalSetCommandProcessor = <S> (toPathToLens: ( path: string ) => Optional<S, any>, condPathToLens: ( path: string ) => Optional<S, any>) =>
+  ( s: S ): ChangeCommandProcessor<S> =>
+    ( c: ChangeCommand ) =>
+      isConditionalSetCommand ( c ) && conditionMet(c.condition, condPathToLens(c.condition.condPath).getOption(s))
+        ? [ [ toPathToLens ( c.path ), () => c.value ] ]
+        : undefined;
+//todo You have GOT to write tests for this ( conditionalSetCommandProcessor )
+
+
 export interface CopyCommand extends ChangeCommand {
-  command: 'copy',
+  command: 'copy';
   from?: string;
   to?: string;
   joiner?: string
 }
 const isCopyCommand = ( c: ChangeCommand ): c is CopyCommand => c.command === 'copy';
 
-export const copyCommandProcessor = <S> ( fromPathToLens: ( path: string ) => Optional<S, any>, toPathToLens: ( path: string ) => Optional<S, any>, defaultLens: Optional<S, any> ) => ( s: S ): ChangeCommandProcessor<S> =>
-  ( c ) => isCopyCommand ( c ) ? [ [ c.to ? toPathToLens ( c.to ) : defaultLens, () => (c.from ? fromPathToLens ( c.from ) : defaultLens).getOption ( s ) ] ] : undefined;
+export const copyCommandProcessor = <S> (
+  fromPathToLens: ( path: string ) => Optional<S, any>,
+  toPathToLens: ( path: string ) => Optional<S, any>,
+  defaultLens: Optional<S, any> ) => ( s: S ): ChangeCommandProcessor<S> =>
+    ( c ) =>
+      isCopyCommand ( c )
+        ? [ [ c.to ? toPathToLens ( c.to ) : defaultLens, () => (c.from ? fromPathToLens ( c.from ) : defaultLens).getOption ( s ) ] ]
+        : undefined;
 
 export interface StrictCopyCommand extends ChangeCommand {
   command: 'copy',
@@ -211,6 +248,7 @@ export const composeChangeCommandProcessors = <S> ( ...ps: ChangeCommandProcesso
 export function processChangeCommandProcessor<S> ( errorPrefix: string, p: ChangeCommandProcessor<S>, cs: ChangeCommand[] ): Transform<S, any>[] {
   return cs.flatMap ( c => {
     const result = p ( c )
+    if (result === undefined && isConditionalSetCommand(c)) return [ [ identityOptional<S> (), old => old ] ]
     if ( result === undefined ) throw Error ( `${errorPrefix}. Don't know how to process change command ${JSON.stringify ( c )}` )
     return result
   } )
@@ -279,7 +317,7 @@ export function processOpenMainPageCommandProcessor<S, PS extends MinimalPageSel
   return c => isOpenMainPageCommand ( c ) ? [ [ pageSelectionL, ps => [ ...ps, makePageSelection ( ps, c.page ) ] ] ] : undefined
 }
 
-type CommonCommands = DeleteCommand | MessageCommand | SetChangeCommand | DeleteAllMessages | TimeStampCommand | CopyJustStringsCommands | ScrollToTopCommand | CloseAllModalPagesCommand
+type CommonCommands = DeleteCommand | MessageCommand | SetChangeCommand | DeleteAllMessages | TimeStampCommand | CopyJustStringsCommands | ScrollToTopCommand | CloseAllModalPagesCommand | ConditionalSetChangeCommand
 export type RestChangeCommands = CommonCommands | CopyResultCommand | DeleteRestWindowCommand | OpenModalPageCommand | StrictCopyCommand | CloseCurrentWindowCommand
 export type ModalChangeCommands = CommonCommands | CopyCommand | OpenModalPageCommand | OpenMainPageCommand
 export type NewPageChangeCommands = CommonCommands | CopyCommand | DeletePageTagsCommand
@@ -324,6 +362,7 @@ export function commonProcessors<S, MSGs, PS extends MinimalPageSelection> ( con
     scrollToTopProcessor (),
     deleteCommandProcessor ( toPathTolens ),
     setCommandProcessor ( toPathTolens ),
+    conditionalSetCommandProcessor( toPathTolens, toPathTolens ) ( config.s ),
     timeStampCommandProcessor ( toPathTolens, dateFn ),
     messageCommandProcessor ( config )
   )
@@ -338,7 +377,8 @@ export const restChangeCommandProcessors = <S, Result, MSGs, PS extends MinimalP
       processOpenModalPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
       processDeleteRestWindowCommand ( config.pageSelectionL ),
       strictCopyCommandProcessor ( config.toPathTolens, config.toPathTolens ) ( config.s ),
-      copyResultCommandProcessor ( config.resultPathToLens, config.toPathTolens ) ( result ) );
+      copyResultCommandProcessor ( config.resultPathToLens, config.toPathTolens ) ( result )
+    );
 
 export const modalCommandProcessors = <S, MSGs, PS extends MinimalPageSelection> ( config: ModalProcessorsConfig<S, MSGs, PS> ) => ( s: S ) => {
   const { fromPathTolens, toPathTolens, tagHolderL, pageNameFn, defaultL } = config
@@ -369,7 +409,7 @@ export const inputCommandProcessors = <S, MSGs, PS extends MinimalPageSelection,
     copyJustStringsCommandProcessor ( config.toPathTolens, config.toPathTolens, config.s ),
     processOpenModalPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
     processOpenMainPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
-    strictCopyCommandProcessor ( toPathTolens, toPathTolens ) ( s ) );
+    strictCopyCommandProcessor ( toPathTolens, toPathTolens ) ( s ));
 };
 export const commandButtonCommandProcessors = <S, MSGs, PS extends MinimalPageSelection,C extends HasCloseOnePage<S,C>> ( config: InputProcessorsConfig<S, MSGs, PS,C> ) => ( s: S ) => {
   const { toPathTolens } = config
@@ -379,7 +419,8 @@ export const commandButtonCommandProcessors = <S, MSGs, PS extends MinimalPageSe
     copyJustStringsCommandProcessor ( config.toPathTolens, config.toPathTolens, config.s ),
     processOpenModalPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
     processOpenMainPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
-    strictCopyCommandProcessor ( toPathTolens, toPathTolens ) ( s ) );
+    strictCopyCommandProcessor ( toPathTolens, toPathTolens ) ( s )
+  );
 };
 
 export const confirmWindowCommandProcessors = <S, MSGs, PS extends MinimalPageSelection, C extends HasCloseOnePage<S, C>> ( config: InputProcessorsConfig<S, MSGs, PS,C> ) => ( s: S ) => {

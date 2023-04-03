@@ -157,7 +157,7 @@ export const restResultToTx = <S, MSGs, PS extends MinimalPageSelection, C exten
   const resultTx: Transform<S, any>[] = useResponse && status && status < 400 ? [ [ one.fdLens.chain ( one.dLens ), old => data ] ] : []
   const is404 = status == 404
   const isError = status && status >= 400 && !is404
-  const changeOnSuccessTxs = status < 400 ? processChangeCommandProcessor ( '', processor, toArray ( restCommand.changeOnSuccess ) ) : []
+  const changeOnSuccessTxs = status && status < 400 ? processChangeCommandProcessor ( '', processor, toArray ( restCommand.changeOnSuccess ) ) : []
   const changeOnCompletionTxs = processChangeCommandProcessor ( '', processor, toArray ( restCommand.changeOnCompletion ) )
   const on404Txs: Transform<S, any>[] = is404 ? processChangeCommandProcessor ( `Rest for ${JSON.stringify ( restCommand )} - on404`, processor, toArray ( restCommand.on404 ) ) : []
   const onErrorTransforms: Transform<S, any>[] = isError ? processChangeCommandProcessor ( `Rest for ${JSON.stringify ( restCommand )}  onError`, processor, toArray ( restCommand.onError ) ) : []
