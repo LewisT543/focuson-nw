@@ -1,5 +1,37 @@
 import { HasSimpleMessages, safeArray, SimpleMessage, stringToSimpleMsg, testDateFn } from "@focuson-nw/utils";
-import { confirmWindowCommandProcessors, CopyCommand, copyCommandProcessor, copyJustStringsCommandProcessor, CopyJustStringsCommands, CopyResultCommand, copyResultCommandProcessor, DeleteCommand, deleteCommandProcessor, DeleteMessageStrictCopySetProcessorsConfig, DeletePageTagsCommand, deletePageTagsCommandProcessor, HasCloseOnePage, MessageCommand, messageCommandProcessor, MinimalPageSelection, modalCommandProcessors, ModalProcessorsConfig, OpenMainPageCommand, OpenModalPageCommand, processOpenMainPageCommandProcessor, processOpenModalPageCommandProcessor, RestAndInputProcessorsConfig, restChangeCommandProcessors, SetChangeCommand, setCommandProcessor, StrictCopyCommand, strictCopyCommandProcessor, TimeStampCommand } from "./changeCommands";
+import {
+  ConditionalCopyCommand,
+  conditionalCopyCommandProcessor,
+  confirmWindowCommandProcessors,
+  CopyCommand,
+  copyCommandProcessor,
+  copyJustStringsCommandProcessor,
+  CopyJustStringsCommands,
+  CopyResultCommand,
+  copyResultCommandProcessor,
+  DeleteCommand,
+  deleteCommandProcessor,
+  DeleteMessageStrictCopySetProcessorsConfig,
+  DeletePageTagsCommand,
+  deletePageTagsCommandProcessor,
+  HasCloseOnePage,
+  MessageCommand,
+  messageCommandProcessor,
+  MinimalPageSelection,
+  modalCommandProcessors,
+  ModalProcessorsConfig,
+  OpenMainPageCommand,
+  OpenModalPageCommand,
+  processOpenMainPageCommandProcessor,
+  processOpenModalPageCommandProcessor,
+  RestAndInputProcessorsConfig,
+  restChangeCommandProcessors,
+  SetChangeCommand,
+  setCommandProcessor,
+  StrictCopyCommand,
+  strictCopyCommandProcessor,
+  TimeStampCommand
+} from "./changeCommands";
 import { displayTransformsInState, lensBuilder, Lenses, parsePath } from "@focuson-nw/lens";
 import { TagHolder } from "@focuson-nw/template";
 
@@ -156,6 +188,43 @@ describe ( " copy command", () => {
     } )
   } )
 } )
+
+// todo: Write these unit tests - work out how the change commands tests actually work
+// describe ( "conditional copy command", () => {
+//   const processor = conditionalCopyCommandProcessor ( fromPathTolens, toPathTolens, fromPathTolens, defaultL );
+//   function command ( from: string | undefined, to: string | undefined ): ConditionalCopyCommand {return { command: 'conditionalCopy', from, to, condition: { type: "equals", condPath: '' } }}
+//   it ( "should ignore none  copy", () => {
+//     expect ( processor ( froma12 ) ( { command: 'something' } ) ).toEqual ( undefined )
+//
+//   } )
+//   describe ( 'copy with default from & to - which is a silly combination', () => {
+//     const expected = [ { "opt": "default.focus?(x).focus?(z).focus?(a)", "value": { "b": "from", "c": "default" } } ];
+//     it ( "should copy the from to the to", () => {
+//       expect ( displayTransformsInState ( froma12Withz, safeArray ( processor ( froma12Withz ) ( command ( undefined, undefined ) ) ) ) ).toEqual ( expected )
+//     } )
+//     it ( "should copy the from to the to - modal", () => {
+//       expect ( displayTransformsInState ( froma12Withz, safeArray ( modalProcessor ( froma12Withz ) ( command ( undefined, undefined ) ) ) ) ).toEqual ( expected )
+//     } )
+//   } )
+//   describe ( 'copy with default from ', () => {
+//     const expected = [ { "opt": "I.focus?(toA).focus?(a)", "value": { "b": "from", "c": "default" } } ];
+//     it ( "should copy the from to the to", () => {
+//       expect ( displayTransformsInState ( froma12Withz, safeArray ( processor ( froma12Withz ) ( command ( undefined, '/a' ) ) ) ) ).toEqual ( expected )
+//     } )
+//     it ( "should copy the from to the to - modal", () => {
+//       expect ( displayTransformsInState ( froma12Withz, safeArray ( modalProcessor ( froma12Withz ) ( command ( undefined, '/a' ) ) ) ) ).toEqual ( expected )
+//     } )
+//   } )
+//   describe ( 'copy with default to ', () => {
+//     const expected = [ { "opt": "default.focus?(x).focus?(z).focus?(a)", "value": { "b": "one", "c": "two" } } ];
+//     it ( "should copy the from to the to", () => {
+//       expect ( displayTransformsInState ( froma12Withz, safeArray ( processor ( froma12Withz ) ( command ( '/a', undefined ) ) ) ) ).toEqual ( expected )
+//     } )
+//     it ( "should copy the from to the to - modal", () => {
+//       expect ( displayTransformsInState ( froma12Withz, safeArray ( modalProcessor ( froma12Withz ) ( command ( '/a', undefined ) ) ) ) ).toEqual ( expected )
+//     } )
+//   } )
+// } )
 describe ( "messageCommandProcessor", () => {
   const processor = messageCommandProcessor<StateForChangeCommands, SimpleMessage, MinimalPageSelection> ( config );
   const command: MessageCommand = { command: 'message', msg: 'someMessage' };

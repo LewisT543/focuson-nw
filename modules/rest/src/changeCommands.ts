@@ -100,21 +100,25 @@ const isSetCommand = ( c: ChangeCommand ): c is SetChangeCommand => c.command ==
 export const setCommandProcessor = <S> ( pathToLens: ( path: string ) => Optional<S, any> ): ChangeCommandProcessor<S> =>
   ( c ) => isSetCommand ( c ) ? [ [ pathToLens ( c.path ), () => c.value ] ] : undefined;
 
+
+// Conditional Commands - Set | Copy
+
+type Condition = EqualsCondition | NotEqualsCondition
+interface BaseCondition {
+  type: string;
+  condVal: any;
+}
+interface ConditionWithPath extends BaseCondition { condPath: string; }
+interface EqualsCondition extends ConditionWithPath { type: 'equals' }
+interface NotEqualsCondition extends ConditionWithPath { type: 'notEquals' }
+
+
 export interface ConditionalSetChangeCommand extends ChangeCommand {
   command: 'conditionalSet';
   path: string;
   value: any;
   condition: Condition;
 }
-type Condition = EqualsCondition | NotEqualsCondition
-interface BaseCondition {
-  type: string;
-  condVal: any;
-}
-interface ConditionWithPath extends BaseCondition {  condPath: string; }
-interface EqualsCondition extends ConditionWithPath { type: 'equals' }
-interface NotEqualsCondition extends ConditionWithPath { type: 'notEquals' }
-
 const isConditionalSetCommand = ( c: ChangeCommand ): c is ConditionalSetChangeCommand => c.command === 'conditionalSet';
 const conditionMet = (cond: Condition, pathVal: any): boolean => {
   const { type, condVal } = cond
@@ -131,6 +135,24 @@ export const conditionalSetCommandProcessor = <S> (toPathToLens: ( path: string 
         ? [ [ toPathToLens ( c.path ), () => c.value ] ]
         : undefined;
 //todo You have GOT to write tests for this ( conditionalSetCommandProcessor )
+
+export interface ConditionalCopyCommand extends ChangeCommand {
+  command: 'conditionalCopy';
+  from?: string;
+  to?: string;
+  joiner?: string;
+  condition: Condition;
+}
+const isConditionalCopyCommand = ( c: ChangeCommand ): c is ConditionalCopyCommand => c.command === 'conditionalCopy';
+export const conditionalCopyCommandProcessor = <S> (
+  fromPathToLens: ( path: string ) => Optional<S, any>,
+  toPathToLens: ( path: string ) => Optional<S, any>,
+  condPathToLens: ( path: string ) => Optional<S, any>,
+  defaultLens: Optional<S, any> ) => ( s: S ): ChangeCommandProcessor<S> =>
+  ( c ) =>
+    isConditionalCopyCommand ( c ) && conditionMet(c.condition, condPathToLens(c.condition.condPath).getOption(s))
+      ? [ [ c.to ? toPathToLens ( c.to ) : defaultLens, () => (c.from ? fromPathToLens ( c.from ) : defaultLens).getOption ( s ) ] ]
+      : undefined;
 
 
 export interface CopyCommand extends ChangeCommand {
@@ -319,10 +341,10 @@ export function processOpenMainPageCommandProcessor<S, PS extends MinimalPageSel
 
 type CommonCommands = DeleteCommand | MessageCommand | SetChangeCommand | DeleteAllMessages | TimeStampCommand | CopyJustStringsCommands | ScrollToTopCommand | CloseAllModalPagesCommand | ConditionalSetChangeCommand
 export type RestChangeCommands = CommonCommands | CopyResultCommand | DeleteRestWindowCommand | OpenModalPageCommand | StrictCopyCommand | CloseCurrentWindowCommand
-export type ModalChangeCommands = CommonCommands | CopyCommand | OpenModalPageCommand | OpenMainPageCommand
-export type NewPageChangeCommands = CommonCommands | CopyCommand | DeletePageTagsCommand
+export type ModalChangeCommands = CommonCommands | CopyCommand | ConditionalCopyCommand | OpenModalPageCommand | OpenMainPageCommand
+export type NewPageChangeCommands = CommonCommands | CopyCommand | ConditionalCopyCommand | DeletePageTagsCommand
 export type InputChangeCommands = CommonCommands | StrictCopyCommand | OpenModalPageCommand | OpenMainPageCommand | CloseCurrentWindowCommand
-export type CommandButtonChangeCommands = CommonCommands | StrictCopyCommand | OpenModalPageCommand | OpenMainPageCommand | CloseCurrentWindowCommand
+export type CommandButtonChangeCommands = CommonCommands | StrictCopyCommand | ConditionalCopyCommand | OpenModalPageCommand | OpenMainPageCommand | CloseCurrentWindowCommand
 export type ConfirmWindowChangeCommands = CommonCommands | StrictCopyCommand | OpenModalPageCommand | OpenMainPageCommand
 
 
@@ -388,7 +410,9 @@ export const modalCommandProcessors = <S, MSGs, PS extends MinimalPageSelection>
     commonProcessors ( config ),
     processOpenModalPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
     processOpenMainPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
-    copyCommandProcessor ( fromPathTolens, toPathTolens, defaultL ) ( s ) );
+    copyCommandProcessor ( fromPathTolens, toPathTolens, defaultL ) ( s ),
+    conditionalCopyCommandProcessor ( fromPathTolens, toPathTolens, fromPathTolens, defaultL ) ( s )
+  );
 };
 
 export const newPageCommandProcessors = <S, MSGs, PS extends MinimalPageSelection> ( config: ModalProcessorsConfig<S, MSGs, PS> ) => ( s: S ): ChangeCommandProcessor<S> => {
@@ -419,7 +443,8 @@ export const commandButtonCommandProcessors = <S, MSGs, PS extends MinimalPageSe
     copyJustStringsCommandProcessor ( config.toPathTolens, config.toPathTolens, config.s ),
     processOpenModalPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
     processOpenMainPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
-    strictCopyCommandProcessor ( toPathTolens, toPathTolens ) ( s )
+    strictCopyCommandProcessor ( toPathTolens, toPathTolens ) ( s ),
+    conditionalCopyCommandProcessor ( toPathTolens, toPathTolens, toPathTolens, config.defaultL ) ( s )
   );
 };
 

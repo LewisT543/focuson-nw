@@ -29,6 +29,16 @@ export const CreatePaymentMP: ExampleModalPage = {
         condition: { type: 'notEquals', condPath: '~/createPayment/tempForConditionalSet_1234', condVal:'1234'}
       }
     ] },
+    condCopy: { control: 'CommandButton', label: 'ConditionalCopy(Equals)', command: [
+      { command: 'conditionalCopy', from: '~/createPayment/tempForConditionalSet_1234', to: '~/createPayment/newVal',
+        condition: { type: 'equals', condPath: '~/createPayment/tempForConditionalSet_1234', condVal: '1234' }
+      }
+    ] },
+    condCopy2: { control: 'CommandButton', label: 'ConditionalCopy(NotEquals)', command: [
+      { command: 'conditionalCopy', from: '~/createPayment/tempForConditionalSet_1234', to: '~/createPayment/newVal',
+        condition: { type: 'notEquals', condPath: '~/createPayment/tempForConditionalSet_1234', condVal: '1234' }
+      }
+    ] },
     cancel: { control: 'ModalCancelButton' },
     commit: { control: 'ModalCommitButton', confirm: "Do you really want to create this payment?" },
     overpaymentHistory: {
