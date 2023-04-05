@@ -103,6 +103,8 @@ export const setCommandProcessor = <S> ( pathToLens: ( path: string ) => Optiona
 
 // Conditional Commands - Set | Copy
 
+const isConditionalCommand = ( c: ChangeCommand ): boolean => isConditionalCopyCommand(c) || isConditionalSetCommand(c)
+
 type Condition = EqualsCondition | NotEqualsCondition
 interface BaseCondition {
   type: string;
@@ -112,12 +114,12 @@ interface ConditionWithPath extends BaseCondition { condPath: string; }
 interface EqualsCondition extends ConditionWithPath { type: 'equals' }
 interface NotEqualsCondition extends ConditionWithPath { type: 'notEquals' }
 
+interface HasCondition { condition: Condition; }
 
-export interface ConditionalSetChangeCommand extends ChangeCommand {
+export interface ConditionalSetChangeCommand extends ChangeCommand, HasCondition {
   command: 'conditionalSet';
   path: string;
   value: any;
-  condition: Condition;
 }
 const isConditionalSetCommand = ( c: ChangeCommand ): c is ConditionalSetChangeCommand => c.command === 'conditionalSet';
 const conditionMet = (cond: Condition, pathVal: any): boolean => {
@@ -136,12 +138,11 @@ export const conditionalSetCommandProcessor = <S> (toPathToLens: ( path: string 
         : undefined;
 //todo You have GOT to write tests for this ( conditionalSetCommandProcessor )
 
-export interface ConditionalCopyCommand extends ChangeCommand {
+export interface ConditionalCopyCommand extends ChangeCommand, HasCondition {
   command: 'conditionalCopy';
   from?: string;
   to?: string;
   joiner?: string;
-  condition: Condition;
 }
 const isConditionalCopyCommand = ( c: ChangeCommand ): c is ConditionalCopyCommand => c.command === 'conditionalCopy';
 export const conditionalCopyCommandProcessor = <S> (
@@ -270,7 +271,7 @@ export const composeChangeCommandProcessors = <S> ( ...ps: ChangeCommandProcesso
 export function processChangeCommandProcessor<S> ( errorPrefix: string, p: ChangeCommandProcessor<S>, cs: ChangeCommand[] ): Transform<S, any>[] {
   return cs.flatMap ( c => {
     const result = p ( c )
-    if (result === undefined && isConditionalSetCommand(c)) return [ [ identityOptional<S> (), old => old ] ]
+    if (result === undefined && isConditionalCommand(c)) return [ [ identityOptional<S> (), old => old ] ] // If condition isn't met - do a nothingTx
     if ( result === undefined ) throw Error ( `${errorPrefix}. Don't know how to process change command ${JSON.stringify ( c )}` )
     return result
   } )
