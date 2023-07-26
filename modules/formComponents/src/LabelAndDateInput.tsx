@@ -91,7 +91,7 @@ export function LabelAndDateInput<S, T, Context extends FocusOnContext<S>> ( pro
       <DatePicker id={id}
                   ariaLabelledBy={labelWithInstructions}
                   dateFormat={dateFormatL}
-                  todayButton="Select Today"
+                  todayButton="Today"
                   selected={error ? null : selectedDate}
                   onChange={( date ) => onChange ( date )}
                   filterDate={includeWeekends ? undefined : isWeekday}

@@ -320,10 +320,16 @@ export function RawDatePicker<S extends any, C extends ModalContext<S>> ( select
       const current: any = document.getElementById ( id )
       if ( current?.setCustomValidity ) current.setCustomValidity ( error ? dateError : '' )
     } )
+
+    const dpInstructions = ' - (Press "esc" to exit datepicker)'
+    const selectADateWithInstructions = "Select a date" + dpInstructions
+    const labelWithInstructions = label + dpInstructions
+
     return <div data-error={dateError} className={`labelAndDate ${props.labelPosition == 'Horizontal' ? 'd-flex-inline' : ''}`}>
-      <Label state={state} htmlFor={name} label={label}/>
+      <Label state={state} htmlFor={name} label={labelWithInstructions}/>
       <div className={`${props.buttons && props.buttons.length > 0 ? 'inputAndButtons' : ''} `}>
         <ReactDatePicker id={id}
+                         ariaLabelledBy={labelWithInstructions}
                          dateFormat={dateFormat}
                          todayButton='Today'
                          openToDate={scrollToDate}
@@ -338,7 +344,7 @@ export function RawDatePicker<S extends any, C extends ModalContext<S>> ( select
                          closeOnScroll={true}
                          onChangeRaw={onChangeRaw}
                          value={error ? value : undefined} // whats going on here? Well the value is read as a date. And the date picker might change it
-                         placeholderText="Select a date"/>
+                         placeholderText={selectADateWithInstructions}/>
         {makeButtons ( props )}
       </div>
       <CustomError id={props.id} validationMessage={dateError} error={error}/>
