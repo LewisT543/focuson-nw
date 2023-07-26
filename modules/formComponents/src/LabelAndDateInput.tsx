@@ -81,11 +81,15 @@ export function LabelAndDateInput<S, T, Context extends FocusOnContext<S>> ( pro
     state.setJson ( date, reasonFor ( 'LabelAndDate', 'onChange', id ) )
   }
 
+  const dpInstructions = ' - (Press "esc" to exit datepicker)'
+  const selectADateWithInstructions = "Select a date" + dpInstructions
+  const labelWithInstructions = label + dpInstructions
 
   return (<div className={`labelAndDate ${props.labelPosition == 'Horizontal' ? 'd-flex-inline' : ''}`}>
-    <Label state={state} htmlFor={name} label={label}/>
+    <Label state={state} htmlFor={name} label={labelWithInstructions}/>
     <div className={`${props.buttons && props.buttons.length > 0 ? 'inputAndButtons' : ''}`}>
       <DatePicker id={id}
+                  ariaLabelledBy={labelWithInstructions}
                   dateFormat={dateFormatL}
                   todayButton="Select Today"
                   selected={error ? null : selectedDate}
@@ -98,7 +102,7 @@ export function LabelAndDateInput<S, T, Context extends FocusOnContext<S>> ( pro
                   // className={error ? "red-border" : ""}
                   closeOnScroll={true}
                   onChangeRaw={( e ) => handleChangeRaw ( e )}
-                  placeholderText="Select a date"/>
+                  placeholderText={selectADateWithInstructions}/>
       {makeButtons ( props )}
       {error && <div className="custom-error">Invalid Date: {state.optJsonOr ( '' )}</div>}
     </div>
