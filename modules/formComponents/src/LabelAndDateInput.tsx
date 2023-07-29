@@ -83,13 +83,11 @@ export function LabelAndDateInput<S, T, Context extends FocusOnContext<S>> ( pro
 
   const dpInstructions = ' - (Press "esc" to exit datepicker)'
   const selectADateWithInstructions = "Select a date" + dpInstructions
-  const labelWithInstructions = label + dpInstructions
 
   return (<div className={`labelAndDate ${props.labelPosition == 'Horizontal' ? 'd-flex-inline' : ''}`}>
-    <Label state={state} htmlFor={name} label={labelWithInstructions}/>
+    <Label state={state} htmlFor={name} label={label}/>
     <div className={`${props.buttons && props.buttons.length > 0 ? 'inputAndButtons' : ''}`}>
       <DatePicker id={id}
-                  ariaLabelledBy={labelWithInstructions}
                   dateFormat={dateFormatL}
                   todayButton="Today"
                   selected={error ? null : selectedDate}

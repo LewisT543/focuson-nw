@@ -323,13 +323,11 @@ export function RawDatePicker<S extends any, C extends ModalContext<S>> ( select
 
     const dpInstructions = ' - (Press "esc" to exit datepicker)'
     const selectADateWithInstructions = "Select a date" + dpInstructions
-    const labelWithInstructions = label + dpInstructions
 
     return <div data-error={dateError} className={`labelAndDate ${props.labelPosition == 'Horizontal' ? 'd-flex-inline' : ''}`}>
-      <Label state={state} htmlFor={name} label={labelWithInstructions}/>
+      <Label state={state} htmlFor={name} label={label}/>
       <div className={`${props.buttons && props.buttons.length > 0 ? 'inputAndButtons' : ''} `}>
         <ReactDatePicker id={id}
-                         ariaLabelledBy={labelWithInstructions}
                          dateFormat={dateFormat}
                          todayButton='Today'
                          openToDate={scrollToDate}
