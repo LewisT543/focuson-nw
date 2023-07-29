@@ -121,7 +121,7 @@ export function tdClassForTable ( rights: string[] | undefined, s: any ) {
 export const defaultOneRowWithGetValue = <T extends any> ( getValue: ( o: keyof T, row: T, joiners: undefined | string | string[] ) => any ) =>
   ( id: string, order: (keyof T)[], joiners: string | string[] | undefined, ...extraTds: (( i: number, row: T ) => JSX.Element)[] ): OneRowFn<T> =>
     ( row: T, i: number, clazz: string | undefined, rights: string[] | undefined, onClick: ( i: number, row: T ) => ( e: any ) => void, onKeyDown: ( i: number, row: T, rowId: string ) => ( e: any ) => void ) => {
-    const ariaLabelText: string = `table: row ${i}: ` + Object.entries(row).map(([k, v],colNum) => `column ${colNum}: ${k}: ${v}:`).join(' - ') + ' - end'
+    const ariaLabelText: string = `table: row ${i + 1}: ` + Object.entries(row).map(([k, v],colNum) => `column ${colNum + 1}: ${k}: ${v}:`).join(' - ') + ' - end'
     return (<tr id={`${id}[${i}]`} role={"row"} aria-label={ariaLabelText} aria-rowindex={i + 2} className={clazz} key={i} tabIndex={i == 0 ? 0 : -1} onClick={onClick ( i, row )} onKeyDown={onKeyDown( i, row, `${id}[${i}]` )}>{order.map ( (o, index) =>
         <td id={`${id}[${i}].${o.toString ()}`} role={"gridcell"} tabIndex={-1} aria-colindex={index + 1} className={tdClassForTable ( rights, o )} key={o.toString ()}>{getValue ( o, row, joiners )}</td> )}{extraTds.map ( ( e, j ) => <td key={`extra${j}`}>{e ( i, row )}</td> )}</tr>);
     }
