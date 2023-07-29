@@ -26,7 +26,10 @@ export const TableDisplayDD: ExampleDataD = {
   description: "A few table variants",
   structure: {
     simpleTable: {
-      dataDD: { ...TableRepDD, name: "Table1", displayParams: { order: [ 'name', 'balance', 'someNumber' ] } },
+      dataDD: { ...TableRepDD, name: "Table1", displayParams: { order: [ 'name', 'balance', 'someNumber' ], copySelectedIndexTo: ["selectedIndex"], copySelectedItemTo: ["selectedItem"] } },
+    },
+    longSimpleTable: {
+      dataDD: { ...TableRepDD, name: "Table5", sampleCount: 20, displayParams: { order: [ 'name', 'balance', 'someNumber' ], scrollAfter: '500px', copySelectedIndexTo: ["selectedIndex2"], copySelectedItemTo: ["selectedItem2"] } },
     },
     tableWithMinBalance: {
       dataDD: {
