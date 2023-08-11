@@ -65,7 +65,7 @@ function makeCreateResultForList ( errorPrefix: string, resolvers: MutationDetai
   const resolver: any = revResolvers.find ( md => isSqlMutationThatIsAList ( md ) || findManualMutationThatIsAList ( md, resolverData.name ) || isSelectMutationThatIsAList ( md ) )
   if ( resolver && isSqlMutationThatIsAList ( resolver ) ) return makeCreateResultForlist ( revResolvers )
   if ( resolver && isSelectMutationThatIsAList ( resolver ) ) return makeCreateResultForlist ( revResolvers )
-  if ( resolver && resolver.type === 'Manual' ) return makeCreateResultForManualList ( errorPrefix, resolver, resolverData )
+  if ( resolver && resolver.type === 'manual' ) return makeCreateResultForManualList ( errorPrefix, resolver, resolverData )
   if ( resolver === undefined ) return [ `There isn't a resolver that is marked as a list, or a manual mutation with an output param name ${resolverData.name} of type List<Map<String,Object>>;` ]
 }
 function makeCreateResultForObject ( errorPrefix: string, resolvers: MutationDetail[], resolverData: ResolverData ): string[] | undefined {

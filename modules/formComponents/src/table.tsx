@@ -74,18 +74,20 @@ export const rawTable = <S, T, Context extends PageSelectionContext<S>> (
     const selected = copySelectedIndexTo?.optJson ()
     function selectedClass ( i: number ) {return i === selected ? 'grid-selected' : undefined }
 
+    const handleSelectTableItem = (e: KeyboardEvent, i: number, row: T) => {
+      e.preventDefault()
+      const txs = transformsForUpdateSelected ( copySelectedIndexTo, copySelectedItemTo ) ( i, row )
+      state.massTransform ( reasonFor ( 'Table', 'onKeyDown', id, `selected row ${i}` ) ) ( ...txs );
+    }
+
     const tbodyRef = useRef(null)
     const handleKeyDown = ( i: number, row: T, rowId: string ) => ( e: any ) => {
       const currentRow = tbodyRef.current?.children.namedItem(rowId)
       switch (e.key) {
-        case "ArrowUp": e.preventDefault(); currentRow?.previousElementSibling?.focus(); break;
-        case "ArrowDown": e.preventDefault(); currentRow?.nextElementSibling?.focus(); break;
-        case "Enter": {
-          e.preventDefault()
-          const txs = transformsForUpdateSelected ( copySelectedIndexTo, copySelectedItemTo ) ( i, row )
-          state.massTransform ( reasonFor ( 'Table', 'onKeyDown', id, `selected row ${i}` ) ) ( ...txs );
-          break;
-        }
+        case "ArrowUp":     e.preventDefault(); currentRow?.previousElementSibling?.focus(); break;
+        case "ArrowDown":   e.preventDefault(); currentRow?.nextElementSibling?.focus(); break;
+        case "Enter":       handleSelectTableItem(e, i, row); break;
+        case " ":           handleSelectTableItem(e, i, row); break;
         default: break;
       }
     }
@@ -100,17 +102,20 @@ export const rawTable = <S, T, Context extends PageSelectionContext<S>> (
         </tr>
       : json.map ( ( row, i ) => filter ( row ) && (maxCount === undefined || count++ < maxCountInt) ? oneRow ( row, i, selectedClass ( i ), rights, onClick, handleKeyDown ) : null );
     const title = tableTitle ? <h2 dangerouslySetInnerHTML={{ __html: replaceTextUsingPath ( state, tableTitle ) }}/> : null
-    const tableAriaLabel: string = `${tableTitle ? 'Table Title: ' + tableTitle : ''}: Focus with tab, navigate rows with arrow keys, enter to select.`
+    const tableAriaLabel: string = `${tableTitle ? 'Table Title: ' + tableTitle : ''}: Focus with tab, navigate rows with arrow keys, enter or space to select.`
     const tableAriaHeaders = `headers: ${titles.map((o, index) => (index + 1).toString() + ":" + o.toString()).join(": ")}: `;
     return (
-      <div role={"grid"} aria-colcount={orderJsx.length} aria-rowcount={json.length + 1}>{title}
-        <table id={id} className="grid" aria-label={tableAriaLabel}>
-          <thead>
-            <tr aria-label={tableAriaHeaders} aria-rowindex={1} tabIndex={0}>{orderJsx}</tr>
-          </thead>
-          <tbody ref={tbodyRef} className="grid-sub" style={tbodyScroll}>{tableBody}</tbody>
-        </table>
-      </div>
+      <>
+        <span>(Focus with tab, navigate rows with arrow keys, enter or space to select.)</span>
+        <div role={"grid"} aria-colcount={orderJsx.length} aria-rowcount={json.length + 1}>{title}
+          <table id={id} className="grid" aria-label={tableAriaLabel}>
+            <thead>
+              <tr aria-label={tableAriaHeaders} aria-rowindex={1} tabIndex={0}>{orderJsx}</tr>
+            </thead>
+            <tbody ref={tbodyRef} className="grid-sub" style={tbodyScroll}>{tableBody}</tbody>
+          </table>
+        </div>
+      </>
     )
   };
 
