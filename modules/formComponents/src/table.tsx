@@ -74,10 +74,11 @@ export const rawTable = <S, T, Context extends PageSelectionContext<S>> (
     const selected = copySelectedIndexTo?.optJson ()
     function selectedClass ( i: number ) {return i === selected ? 'grid-selected' : undefined }
 
-    const handleSelectTableItem = (e: KeyboardEvent, i: number, row: T) => {
+    const handleSelectTableItem = (e: KeyboardEvent, i: number, row: T, rowId: string) => {
       e.preventDefault()
       const txs = transformsForUpdateSelected ( copySelectedIndexTo, copySelectedItemTo ) ( i, row )
       state.massTransform ( reasonFor ( 'Table', 'onKeyDown', id, `selected row ${i}` ) ) ( ...txs );
+      tbodyRef.current?.children.namedItem(rowId).scrollIntoView()
     }
 
     const tbodyRef = useRef(null)
@@ -86,8 +87,8 @@ export const rawTable = <S, T, Context extends PageSelectionContext<S>> (
       switch (e.key) {
         case "ArrowUp":     e.preventDefault(); currentRow?.previousElementSibling?.focus(); break;
         case "ArrowDown":   e.preventDefault(); currentRow?.nextElementSibling?.focus(); break;
-        case "Enter":       handleSelectTableItem(e, i, row); break;
-        case " ":           handleSelectTableItem(e, i, row); break;
+        case "Enter":       handleSelectTableItem(e, i, row, rowId); break;
+        case " ":           handleSelectTableItem(e, i, row, rowId); break;
         default: break;
       }
     }
@@ -127,7 +128,7 @@ export const defaultOneRowWithGetValue = <T extends any> ( getValue: ( o: keyof 
   ( id: string, order: (keyof T)[], joiners: string | string[] | undefined, ...extraTds: (( i: number, row: T ) => JSX.Element)[] ): OneRowFn<T> =>
     ( row: T, i: number, clazz: string | undefined, rights: string[] | undefined, onClick: ( i: number, row: T ) => ( e: any ) => void, onKeyDown: ( i: number, row: T, rowId: string ) => ( e: any ) => void ) => {
     const ariaLabelText: string = `table: row ${i + 1}: ` + Object.entries(row).map(([k, v],colNum) => `column ${colNum + 1}: ${k}: ${v}:`).join(' - ') + ' - end'
-    return (<tr id={`${id}[${i}]`} role={"row"} aria-label={ariaLabelText} aria-rowindex={i + 2} className={clazz} key={i} tabIndex={i == 0 ? 0 : -1} onClick={onClick ( i, row )} onKeyDown={onKeyDown( i, row, `${id}[${i}]` )}>{order.map ( (o, index) =>
+    return (<tr id={`${id}[${i}]`} role={"row"} aria-label={ariaLabelText} aria-rowindex={i + 2} className={clazz} key={i} tabIndex={clazz ? 0 : -1} onClick={onClick ( i, row )} onKeyDown={onKeyDown( i, row, `${id}[${i}]` )}>{order.map ( (o, index) =>
         <td id={`${id}[${i}].${o.toString ()}`} role={"gridcell"} tabIndex={-1} aria-colindex={index + 1} className={tdClassForTable ( rights, o )} key={o.toString ()}>{getValue ( o, row, joiners )}</td> )}{extraTds.map ( ( e, j ) => <td key={`extra${j}`}>{e ( i, row )}</td> )}</tr>);
     }
 
