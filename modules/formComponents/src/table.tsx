@@ -2,7 +2,7 @@ import { CommonStateProps } from "./common";
 import { decamelize, findJoiner, makeIntoString, NameAnd, numberOrUndefined, safeArray } from "@focuson-nw/utils";
 import { LensState, reasonFor } from "@focuson-nw/state";
 import { Lenses, Transform } from "@focuson-nw/lens";
-import {CSSProperties, useRef} from "react";
+import {CSSProperties, forwardRef, MutableRefObject, useRef} from "react";
 import { PageSelectionContext, replaceTextUsingPath } from "@focuson-nw/pages";
 
 export interface CommonTableProps<S, T, Context> extends CommonStateProps<S, T[], Context> {
@@ -73,22 +73,22 @@ export const rawTable = <S, T, Context extends PageSelectionContext<S>> (
     const json: T[] = safeArray ( state.optJson (), `Table id: [${id}] path: ${state.optional.description}` )
     const selected = copySelectedIndexTo?.optJson ()
     function selectedClass ( i: number ) {return i === selected ? 'grid-selected' : undefined }
+    const tbodyRef = useRef(null)
 
-    const handleSelectTableItem = (e: KeyboardEvent, i: number, row: T, rowId: string) => {
-      e.preventDefault()
+    const handleSelectTableItem = (e: KeyboardEvent, i: number, row: T, rowId: string, currentRowRef: any) => {
       const txs = transformsForUpdateSelected ( copySelectedIndexTo, copySelectedItemTo ) ( i, row )
       state.massTransform ( reasonFor ( 'Table', 'onKeyDown', id, `selected row ${i}` ) ) ( ...txs );
-      tbodyRef.current?.children.namedItem(rowId).scrollIntoView()
+      // ref.current?.children.namedItem(rowId).focus()
+      // tbodyRef.current?.children.namedItem(rowId).scrollIntoView({block: "center"})
     }
 
-    const tbodyRef = useRef(null)
     const handleKeyDown = ( i: number, row: T, rowId: string ) => ( e: any ) => {
-      const currentRow = tbodyRef.current?.children.namedItem(rowId)
+      const currentRowRef = tbodyRef.current?.children.namedItem(rowId)
       switch (e.key) {
-        case "ArrowUp":     e.preventDefault(); currentRow?.previousElementSibling?.focus(); break;
-        case "ArrowDown":   e.preventDefault(); currentRow?.nextElementSibling?.focus(); break;
-        case "Enter":       handleSelectTableItem(e, i, row, rowId); break;
-        case " ":           handleSelectTableItem(e, i, row, rowId); break;
+        case "ArrowUp":     e.preventDefault(); currentRowRef?.previousElementSibling?.focus(); break;
+        case "ArrowDown":   e.preventDefault(); currentRowRef?.nextElementSibling?.focus(); break;
+        case "Enter":       e.preventDefault(); handleSelectTableItem(e, i, row, rowId, currentRowRef); break;
+        case " ":           e.preventDefault(); handleSelectTableItem(e, i, row, rowId, currentRowRef); break;
         default: break;
       }
     }
@@ -124,13 +124,22 @@ export function tdClassForTable ( rights: string[] | undefined, s: any ) {
   if ( !rights ) return undefined
   return rights.includes ( s ) ? 'right' : undefined
 }
+
+const ariaLabelForTableRow = <T extends any>(i: number, row: T) =>
+  `table: row ${i + 1}: ` + Object.entries(row).map(([k, v],colNum) =>
+    `column ${colNum + 1}: ${k}: ${v}:`).join(' - ') + ' - end'
+
+const tabIndexForTableRow = (clazz: string, i: number): number => {
+  if (clazz) return 0
+  return i == 0 ? 0 :-1
+}
+
 export const defaultOneRowWithGetValue = <T extends any> ( getValue: ( o: keyof T, row: T, joiners: undefined | string | string[] ) => any ) =>
   ( id: string, order: (keyof T)[], joiners: string | string[] | undefined, ...extraTds: (( i: number, row: T ) => JSX.Element)[] ): OneRowFn<T> =>
-    ( row: T, i: number, clazz: string | undefined, rights: string[] | undefined, onClick: ( i: number, row: T ) => ( e: any ) => void, onKeyDown: ( i: number, row: T, rowId: string ) => ( e: any ) => void ) => {
-    const ariaLabelText: string = `table: row ${i + 1}: ` + Object.entries(row).map(([k, v],colNum) => `column ${colNum + 1}: ${k}: ${v}:`).join(' - ') + ' - end'
-    return (<tr id={`${id}[${i}]`} role={"row"} aria-label={ariaLabelText} aria-rowindex={i + 2} className={clazz} key={i} tabIndex={clazz ? 0 : -1} onClick={onClick ( i, row )} onKeyDown={onKeyDown( i, row, `${id}[${i}]` )}>{order.map ( (o, index) =>
-        <td id={`${id}[${i}].${o.toString ()}`} role={"gridcell"} tabIndex={-1} aria-colindex={index + 1} className={tdClassForTable ( rights, o )} key={o.toString ()}>{getValue ( o, row, joiners )}</td> )}{extraTds.map ( ( e, j ) => <td key={`extra${j}`}>{e ( i, row )}</td> )}</tr>);
-    }
+    ( row: T, i: number, clazz: string | undefined, rights: string[] | undefined, onClick: ( i: number, row: T ) => ( e: any ) => void, onKeyDown: ( i: number, row: T, rowId: string ) => ( e: any ) => void ) =>
+     ( <tr id={`${id}[${i}]`} role={"row"} aria-label={ariaLabelForTableRow(i, row)} aria-rowindex={i + 2} className={clazz} key={i} tabIndex={tabIndexForTableRow(clazz, i)} onClick={onClick ( i, row )} onKeyDown={onKeyDown( i, row, `${id}[${i}]` )}>{order.map ( (o, index) =>
+       <td id={`${id}[${i}].${o.toString ()}`} role={"gridcell"} tabIndex={-1} aria-colindex={index + 1} className={tdClassForTable ( rights, o )} key={o.toString ()}>{getValue ( o, row, joiners )}</td> )}{extraTds.map ( ( e, j ) => <td key={`extra${j}`}>{e ( i, row )}</td> )}</tr>);
+
 
 
 export const defaultOneRow = defaultOneRowWithGetValue ( getValueForTable )
@@ -139,7 +148,6 @@ export function Table<S, T, Context extends PageSelectionContext<S>> ( props: Ta
   const { id, order, joiners } = props
   return rawTable<S, T, Context> ( order, defaultOnClick ( props ), defaultOneRow ( id, order, joiners ) ) ( props )
 }
-
 
 export const oneRowForStructure = <S, T extends any, Context>
 ( id: string, state: LensState<S, T[], Context>, paths: NameAnd<( s: LensState<S, T, Context> ) => LensState<S, any, Context>>, ...extraTds: (( i: number, row: T ) => JSX.Element)[] ): OneRowFn<T> =>

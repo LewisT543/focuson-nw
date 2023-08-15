@@ -4,8 +4,19 @@ import { safeArray } from "@focuson-nw/utils";
 import { LabelAndStringInput } from "./labelAndInput";
 import { FocusOnContext } from "@focuson-nw/focuson";
 import { Layout } from "./layout";
-import { defaultDisplayTitleFn, defaultOnClick, defaultOneRowWithGetValue, DisplayTitleFn, getValueForTable, rawTable, TableProps } from "./table";
+import {
+  defaultDisplayTitleFn,
+  defaultOnClick, defaultOneRow,
+  defaultOneRowWithGetValue,
+  DisplayTitleFn,
+  getValueForTable,
+  rawTable,
+  Table,
+  TableProps
+} from "./table";
 import { LabelAndFixedNumber } from "./labelAndFixedNumber";
+import {ForwardedRef, forwardRef, ForwardRefRenderFunction, useEffect} from "react";
+import {PageSelectionContext} from "@focuson-nw/pages";
 
 
 export interface AuthoriseTableData {
@@ -19,6 +30,11 @@ export interface AuthoriseTableData {
 
 export interface AuthoriseTableProps<S, D extends AuthoriseTableData, C> extends TableProps<S, D, C> {
   firstColumnName?: string
+  displayTtlFn: DisplayTitleFn
+}
+
+export interface AuthoriseTablePropsWithRef<S, D extends AuthoriseTableData, C> extends AuthoriseTableProps<S, D, C> {
+  ref?: ForwardedRef<AuthoriseTableProps<S, D, C>>
 }
 
 const getValueForAuthorisedTable = <T extends AuthoriseTableData> ( o: keyof T, row: T, joiners: undefined | string | string[] ) => {
@@ -37,10 +53,11 @@ const haltBox = <S, D extends AuthoriseTableData, C> ( state: LensState<S, D[], 
 function sum<D extends AuthoriseTableData> ( ds: D[], crOrDr: 'CR' | 'DR' ): string {
   return "" + safeArray ( ds ).reduce ( ( acc, v ) => v.type == crOrDr ? acc + Number.parseFloat ( v.amount ) : acc, 0 )
 }
-export function AuthoriseTable<S, D extends AuthoriseTableData, C extends FocusOnContext<S>> ( props: AuthoriseTableProps<S, D, C> ) {
-  const { state, order, id, mode, copySelectedItemTo, firstColumnName } = props
+
+export const AuthoriseTable = <S, D extends AuthoriseTableData, C extends FocusOnContext<S>> ( props: AuthoriseTableProps<S, D, C> ) => {
+  const { state, order, id, joiners, mode, copySelectedItemTo, copySelectedIndexTo, firstColumnName } = props
   const dispTitle: DisplayTitleFn = ( id, field, i ) => i === 0 ? <th key={field} id={`${id}.th[${i}]`}>{firstColumnName}</th> : defaultDisplayTitleFn ( id, field, i );
-  const AuthTable = rawTable<S, any, C> ( [ ...order, 'Halt' ], defaultOnClick ( props ), defaultOneRowWithGetValue ( getValueForAuthorisedTable ) ( id, order, [], haltBox ( state, id ) ), dispTitle )
+  const NewRawTable = rawTable<S, D, C> ( [ ...order, 'Halt' ], defaultOnClick ( props ), defaultOneRowWithGetValue ( getValueForAuthorisedTable ) ( id, order, [], haltBox ( state, id ) ), dispTitle )
   const data = state.optJsonOr ( [] )
   const credits = sum ( data, 'CR' )
   const debits = sum ( data, 'DR' )
@@ -49,8 +66,9 @@ export function AuthoriseTable<S, D extends AuthoriseTableData, C extends FocusO
   // @ts-ignore
   const authorisedByS: LensState<S, string, C> = copySelectedItemTo.focusOn ( 'authorisedBy' );
 
+
   return <Layout state={state} details='[[1],[1,1],[1,1,1]]'>
-    <AuthTable{...props}  />
+    <NewRawTable{...props} />
     <LabelAndStringInput id={`${id}.approvedBy`} label='Approved By' state={approvedByS} mode='view' allButtons={{}}/>
     <LabelAndStringInput id={`${id}.authorisedBy`} label='Authorised By' state={authorisedByS} mode='view' allButtons={{}}/>
     <LabelAndFixedNumber id={`${id}.totalCredits`} label='Total Credits' number={credits}/>

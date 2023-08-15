@@ -91,12 +91,13 @@ export function ListOfChargesDD ( c: AuthoriseCustomisation ): ExampleRepeatingD
     description: 'All the charges',
     dataDD: OneChargeDataDD ( c ),
     display: AuthoriseTableCD,
-    sampleCount: 10,
+    sampleCount: 100,
     displayParams: {
       order: [ 'chargeType', 'status', 'type', 'sortCode', 'accountNo', 'amount', 'narrative', 'hold' ],
       copySelectedItemTo: '~/selectedCharge',
       copySelectedIndexTo: '~/selectedChargeIndex',
-      firstColumnName: c.firstColumnName
+      firstColumnName: c.firstColumnName,
+      scrollAfter: "500px"
     },
     paged: false
   }) )
