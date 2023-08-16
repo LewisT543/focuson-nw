@@ -91,7 +91,7 @@ export function ListOfChargesDD ( c: AuthoriseCustomisation ): ExampleRepeatingD
     description: 'All the charges',
     dataDD: OneChargeDataDD ( c ),
     display: AuthoriseTableCD,
-    sampleCount: 100,
+    sampleCount: 45,
     displayParams: {
       order: [ 'chargeType', 'status', 'type', 'sortCode', 'accountNo', 'amount', 'narrative', 'hold' ],
       copySelectedItemTo: '~/selectedCharge',
