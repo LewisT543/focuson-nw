@@ -30,7 +30,6 @@ export interface AuthoriseTableData {
 
 export interface AuthoriseTableProps<S, D extends AuthoriseTableData, C> extends TableProps<S, D, C> {
   firstColumnName?: string
-  displayTtlFn: DisplayTitleFn
 }
 
 export interface AuthoriseTablePropsWithRef<S, D extends AuthoriseTableData, C> extends AuthoriseTableProps<S, D, C> {
