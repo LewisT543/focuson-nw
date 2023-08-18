@@ -79,6 +79,13 @@ table {
 .highlight {
     color: red;
 }
+.highlight-bold {
+    font-weight: bold;
+    color: white;
+    background-color: indianred;
+    border-color: black;
+}
+
 
 .labelDropdownButton {
     width: 100%;

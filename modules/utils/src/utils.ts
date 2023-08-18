@@ -90,6 +90,12 @@ export function numberOrUndefined(s: any): number|undefined{
   }
   return undefined
 }
+export function stringOrUndefined(s: any): string|undefined {
+  if (typeof s === 'string') return s
+  if (typeof s === 'number') return s.toString()
+  console.log("STRING OR UNDEFINED IS UNDEFINED")
+  return undefined
+}
 export function safePick ( s: string[] | undefined, i: number ) {
   const sa = safeArray ( s )
   return sa.length == 0 ? '' : sa[ i % sa.length ]

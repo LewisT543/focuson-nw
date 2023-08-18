@@ -12,8 +12,8 @@
     ]
   },
   "dependencies": {
-    "@focuson-nw/utils": "2.0.31",
-    "@focuson-nw/files": "2.0.31"
+    "@focuson-nw/utils": "2.0.32",
+    "@focuson-nw/files": "2.0.32"
   },
   "devDependencies": {
     "@types/node": "^14.14.7",
@@ -45,7 +45,7 @@
     "test": "jest --config jest.config.json",
     "test:watch": "npm run test -- --watch"
   },
-  "version": "2.0.31",
+  "version": "2.0.32",
   "template": "noreact",
   "description": "Code generators",
   "details": {

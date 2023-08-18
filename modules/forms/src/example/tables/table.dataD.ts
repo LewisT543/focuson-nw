@@ -1,6 +1,11 @@
 import { ExampleDataD, ExampleRepeatingD } from "../common";
 import { IntegerDD, MoneyStringDD, StringDD } from "../../common/dataD";
-import { TableCD, TableWithHighLightIfOverCD, TableWithHighLightIfOverDataDependantCD } from "../../common/componentsD";
+import {
+  TableCD,
+  TableWithHighLightIfCellEqualsValueCD,
+  TableWithHighLightIfOverCD,
+  TableWithHighLightIfOverDataDependantCD
+} from "../../common/componentsD";
 
 export const TableRowDD: ExampleDataD = {
   name: 'TableRow',
@@ -57,11 +62,25 @@ export const TableDisplayDD: ExampleDataD = {
         }
       }
     },
+    tableWithHighLightIfCellEqualsValue: {
+      dataDD: {
+        ...TableRepDD,
+        name: 'Table4',
+        display: TableWithHighLightIfCellEqualsValueCD,
+        sampleCount: 10,
+        displayParams: {
+          order: [ 'name', 'balance', 'someNumber' ],
+          nameOfCellForEquals: 'name',
+          value: 'someString',
+          classNameOfHighlight: 'highlight-bold'
+        }
+      }
+    },
     minValue: { dataDD: IntegerDD },
     tableWithVaryingMinValueOnBalance: {
       dataDD: {
         ...TableRepDD,
-        name: 'Table4',
+        name: 'Table6',
         display: TableWithHighLightIfOverDataDependantCD,
         displayParams: {
           order: [ 'name', 'balance', 'someNumber' ],

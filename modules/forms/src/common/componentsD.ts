@@ -301,6 +301,16 @@ export const TableWithHighLightIfOverDataDependantCD: DisplayCompD = {
     classNameOfHighlight: { paramType: 'string', needed: 'yes' }
   }
 }
+export const TableWithHighLightIfCellEqualsValueCD: DisplayCompD = {
+  import: "@focuson-nw/form_components",   //so that I can write the import statement for the react component
+  name: "TableWithHighLightIfCellEqualsValue",                        //The name of the react component
+  params: {
+    ...tableParams,
+    nameOfCellForEquals: { paramType: 'string', needed: 'yes' },
+    value: { paramType: 'string', needed: 'yes' },
+    classNameOfHighlight: { paramType: 'string', needed: 'yes' }
+  }
+}
 export const TableWithVaryingOrderCD: DisplayCompD = {
   import: "@focuson-nw/form_components",   //so that I can write the import statement for the react component
   name: "TableWithVaryingOrder",                        //The name of the react component

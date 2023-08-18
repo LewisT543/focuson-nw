@@ -1,5 +1,13 @@
 import { CommonStateProps } from "./common";
-import { decamelize, findJoiner, makeIntoString, NameAnd, numberOrUndefined, safeArray } from "@focuson-nw/utils";
+import {
+  decamelize,
+  findJoiner,
+  makeIntoString,
+  NameAnd,
+  numberOrUndefined,
+  safeArray,
+  safeString, stringOrUndefined
+} from "@focuson-nw/utils";
 import { LensState, reasonFor } from "@focuson-nw/state";
 import { Lenses, Transform } from "@focuson-nw/lens";
 import {CSSProperties, forwardRef, MutableRefObject, Ref, useEffect, useRef} from "react";
@@ -205,4 +213,18 @@ export function TableWithHighLightIfOverDataDependant<S, T, Context extends Page
   return rawTable<S, T, Context> ( order, defaultOnClick ( props ), oneRow ) ( props )
 }
 
+export interface TableWithHighLightIfCellEqualsValueProps<S, T, Context> extends TableProps<S, T, Context> {
+  nameOfCellForEquals: keyof T
+  value: string
+  classNameOfHighlight: string
+}
 
+export function TableWithHighLightIfCellEqualsValue<S, T, Context extends PageSelectionContext<S>> ( props: TableWithHighLightIfCellEqualsValueProps<S, T, Context> ) {
+  const { id, nameOfCellForEquals, value, classNameOfHighlight, order, joiners } = props
+  const oneRow = addClassRowFn ( defaultOneRow ( id, order, joiners ), row => {
+    const tableValue = stringOrUndefined(row[ nameOfCellForEquals ])
+    const shouldHighlight = tableValue !== undefined && value !== undefined && tableValue === value
+    return shouldHighlight ? classNameOfHighlight : undefined
+  } )
+  return rawTable<S, T, Context> ( order, defaultOnClick ( props ), oneRow ) ( props )
+}
