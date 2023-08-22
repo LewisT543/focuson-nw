@@ -321,7 +321,7 @@ export function RawDatePicker<S extends any, C extends ModalContext<S>> ( select
       if ( current?.setCustomValidity ) current.setCustomValidity ( error ? dateError : '' )
     } )
 
-    const dpInstructions = ' - (Press "esc" to exit datepicker)'
+    const dpInstructions = ' - (Press "esc" to exit calendar)'
     const selectADateWithInstructions = "Select a date" + dpInstructions
 
     return <div data-error={dateError} className={`labelAndDate ${props.labelPosition == 'Horizontal' ? 'd-flex-inline' : ''}`}>

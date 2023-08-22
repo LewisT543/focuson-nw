@@ -81,7 +81,7 @@ export function LabelAndDateInput<S, T, Context extends FocusOnContext<S>> ( pro
     state.setJson ( date, reasonFor ( 'LabelAndDate', 'onChange', id ) )
   }
 
-  const dpInstructions = ' - (Press "esc" to exit datepicker)'
+  const dpInstructions = ' - (Press "esc" to exit calendar)'
   const selectADateWithInstructions = "Select a date" + dpInstructions
 
   return (<div className={`labelAndDate ${props.labelPosition == 'Horizontal' ? 'd-flex-inline' : ''}`}>
