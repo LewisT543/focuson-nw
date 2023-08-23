@@ -79,11 +79,19 @@ table {
 .highlight {
     color: red;
 }
+
 .highlight-bold {
-    font-weight: bold;
-    color: white;
-    background-color: indianred;
-    border-color: black;
+    font-weight: bold!important;
+    color: white!important;
+    background-color: indianred!important;
+    border-color: black!important;
+}
+
+.highlight-bold:hover {
+    font-weight: bolder!important;
+    color: white!important;
+    background-color: red!important;
+    border: 1px black !important;
 }
 
 
