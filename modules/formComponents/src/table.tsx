@@ -152,7 +152,7 @@ const tabIndexForTableRow = (clazz: string, i: number, selectedIndex: number | u
 export const defaultOneRowWithGetValue = <T extends any> ( getValue: ( o: keyof T, row: T, joiners: undefined | string | string[] ) => any ) =>
   ( id: string, order: (keyof T)[], joiners: string | string[] | undefined, ...extraTds: (( i: number, row: T ) => JSX.Element)[] ): OneRowFn<T> =>
     ( row: T, i: number, clazz: string | undefined, rights: string[] | undefined, selectedIndex: number | undefined, onClick: ( i: number, row: T ) => ( e: any ) => void, onKeyDown: ( i: number, row: T, rowId: string ) => ( e: any ) => void, ref?: any ) =>
-      ( <tr id={`${id}[${i}]`} role={"row"} aria-label={ariaLabelForTableRow(i, order, row, joiners, getValue)} aria-rowindex={i + 2} className={clazz} key={i} tabIndex={tabIndexForTableRow(clazz, i, selectedIndex)} onClick={onClick ( i, row )} onKeyDown={onKeyDown( i, row, `${id}[${i}]` )}>{order.map ( (o, index) =>
+      ( <tr id={`${id}[${i}]`} role={"row"} aria-label={ariaLabelForTableRow(i, order, row, joiners, getValue)} aria-rowindex={i + 1} className={clazz} key={i} tabIndex={tabIndexForTableRow(clazz, i, selectedIndex)} onClick={onClick ( i, row )} onKeyDown={onKeyDown( i, row, `${id}[${i}]` )}>{order.map ( (o, index) =>
         <td id={`${id}[${i}].${o.toString ()}`} role={"gridcell"} tabIndex={-1} aria-colindex={index + 1} className={tdClassForTable ( rights, o )} key={o.toString ()}>{getValue ( o, row, joiners )}</td> )}{extraTds.map ( ( e, j ) => <td key={`extra${j}`}>{e ( i, row )}</td> )}</tr>);
 
 export const defaultOneRow = defaultOneRowWithGetValue ( getValueForTable )
