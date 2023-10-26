@@ -115,7 +115,9 @@ export const CreatePaymentDD: ExampleDataD = {
     collectionDate: { dataDD: DateDD },
     reason: { dataDD: paymentReasonDD },
     allowance: { dataDD: MoneyDD, guard: { reasonIsAllowance: [ 'A' ] }, displayParams: { readonly: true } },
-    period: { dataDD: periodDD, guard: { reasonIsAllowance: [ 'A' ] }, displayParams: { readonly: true } }
+    period: { dataDD: periodDD, guard: { reasonIsAllowance: [ 'A' ] }, displayParams: { readonly: true } },
+    copyFrom: { dataDD: StringDD },
+    copyTo: { dataDD: MoneyDD }
   }
 }
 

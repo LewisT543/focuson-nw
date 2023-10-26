@@ -39,6 +39,7 @@ export const CreatePaymentMP: ExampleModalPage = {
         condition: { type: 'notEquals', condPath: '~/createPayment/tempForConditionalSet_1234', condVal: '1234' }
       }
     ] },
+    copyStringToInt: { control: 'CommandButton', command: { command: 'copyAndParseInt', from: '~/createPayment/copyFrom', to: '~/createPayment/copyTo' } },
     cancel: { control: 'ModalCancelButton' },
     commit: { control: 'ModalCommitButton', confirm: "Do you really want to create this payment?" },
     overpaymentHistory: {

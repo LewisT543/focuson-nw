@@ -173,6 +173,29 @@ export const copyCommandProcessor = <S> (
         ? [ [ c.to ? toPathToLens ( c.to ) : defaultLens, () => (c.from ? fromPathToLens ( c.from ) : defaultLens).getOption ( s ) ] ]
         : undefined;
 
+export interface CopyAndParseIntCommand extends ChangeCommand {
+  command: 'copyAndParseInt';
+  from?: string;
+  to?: string;
+  joiner?: string
+}
+const isCopyAndParseIntCommand = ( c: ChangeCommand ): c is CopyAndParseIntCommand => c.command === 'copyAndParseInt';
+
+export const copyAndParseIntCommandProcessor = <S> (
+  fromPathToLens: ( path: string ) => Optional<S, any>,
+  toPathToLens: ( path: string ) => Optional<S, any>,
+  defaultLens: Optional<S, any> ) => ( s: S ): ChangeCommandProcessor<S> =>
+  ( c ) => {
+    console.log('IsCopyAndParseIntCommand: ', isCopyAndParseIntCommand ( c ))
+    const myValue = isCopyAndParseIntCommand ( c ) && (c.from ? fromPathToLens ( c.from ) : defaultLens).getOption ( s )
+    console.log('copyAndParseIntCommandProcessor', myValue)
+    console.log('copyAndParseIntCommandProcessor > PARSEINT', Number.parseFloat(myValue))
+    return isCopyAndParseIntCommand ( c )
+      ? [ [ c.to ? toPathToLens ( c.to ) : defaultLens, () => Number.parseFloat((c.from ? fromPathToLens ( c.from ) : defaultLens).getOption ( s )) ] ]
+      : undefined;
+  }
+
+
 export interface StrictCopyCommand extends ChangeCommand {
   command: 'copy',
   from: string;
@@ -342,10 +365,10 @@ export function processOpenMainPageCommandProcessor<S, PS extends MinimalPageSel
 
 type CommonCommands = DeleteCommand | MessageCommand | SetChangeCommand | DeleteAllMessages | TimeStampCommand | CopyJustStringsCommands | ScrollToTopCommand | CloseAllModalPagesCommand | ConditionalSetChangeCommand
 export type RestChangeCommands = CommonCommands | CopyResultCommand | DeleteRestWindowCommand | OpenModalPageCommand | StrictCopyCommand | CloseCurrentWindowCommand
-export type ModalChangeCommands = CommonCommands | CopyCommand | ConditionalCopyCommand | OpenModalPageCommand | OpenMainPageCommand
-export type NewPageChangeCommands = CommonCommands | CopyCommand | ConditionalCopyCommand | DeletePageTagsCommand
-export type InputChangeCommands = CommonCommands | StrictCopyCommand | OpenModalPageCommand | OpenMainPageCommand | CloseCurrentWindowCommand
-export type CommandButtonChangeCommands = CommonCommands | StrictCopyCommand | ConditionalCopyCommand | OpenModalPageCommand | OpenMainPageCommand | CloseCurrentWindowCommand
+export type ModalChangeCommands = CommonCommands | CopyCommand | CopyAndParseIntCommand | ConditionalCopyCommand | OpenModalPageCommand | OpenMainPageCommand
+export type NewPageChangeCommands = CommonCommands | CopyCommand | CopyAndParseIntCommand | ConditionalCopyCommand | DeletePageTagsCommand
+export type InputChangeCommands = CommonCommands | StrictCopyCommand | CopyAndParseIntCommand | OpenModalPageCommand | OpenMainPageCommand | CloseCurrentWindowCommand
+export type CommandButtonChangeCommands = CommonCommands | StrictCopyCommand | CopyAndParseIntCommand | ConditionalCopyCommand | OpenModalPageCommand | OpenMainPageCommand | CloseCurrentWindowCommand
 export type ConfirmWindowChangeCommands = CommonCommands | StrictCopyCommand | OpenModalPageCommand | OpenMainPageCommand
 
 
@@ -412,7 +435,8 @@ export const modalCommandProcessors = <S, MSGs, PS extends MinimalPageSelection>
     processOpenModalPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
     processOpenMainPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
     copyCommandProcessor ( fromPathTolens, toPathTolens, defaultL ) ( s ),
-    conditionalCopyCommandProcessor ( fromPathTolens, toPathTolens, fromPathTolens, defaultL ) ( s )
+    conditionalCopyCommandProcessor ( fromPathTolens, toPathTolens, fromPathTolens, defaultL ) ( s ),
+    copyAndParseIntCommandProcessor ( fromPathTolens, toPathTolens, defaultL ) ( s )
   );
 };
 
@@ -422,7 +446,9 @@ export const newPageCommandProcessors = <S, MSGs, PS extends MinimalPageSelectio
     deletePageTagsCommandProcessor ( config.tagHolderL, config.pageNameFn, s ),
     copyJustStringsCommandProcessor ( config.toPathTolens, config.toPathTolens, config.s ),
     commonProcessors ( config ),
-    copyCommandProcessor ( fromPathTolens, toPathTolens, defaultL ) ( s ) );
+    copyCommandProcessor ( fromPathTolens, toPathTolens, defaultL ) ( s ),
+    copyAndParseIntCommandProcessor ( fromPathTolens, toPathTolens, defaultL ) ( s )
+  );
 };
 
 
@@ -434,6 +460,7 @@ export const inputCommandProcessors = <S, MSGs, PS extends MinimalPageSelection,
     copyJustStringsCommandProcessor ( config.toPathTolens, config.toPathTolens, config.s ),
     processOpenModalPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
     processOpenMainPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
+    copyAndParseIntCommandProcessor ( config.toPathTolens, config.toPathTolens, config.defaultL ) ( s ),
     strictCopyCommandProcessor ( toPathTolens, toPathTolens ) ( s ));
 };
 export const commandButtonCommandProcessors = <S, MSGs, PS extends MinimalPageSelection,C extends HasCloseOnePage<S,C>> ( config: InputProcessorsConfig<S, MSGs, PS,C> ) => ( s: S ) => {
@@ -445,7 +472,8 @@ export const commandButtonCommandProcessors = <S, MSGs, PS extends MinimalPageSe
     processOpenModalPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
     processOpenMainPageCommandProcessor ( config.pageSelectionL, config.dateFn ),
     strictCopyCommandProcessor ( toPathTolens, toPathTolens ) ( s ),
-    conditionalCopyCommandProcessor ( toPathTolens, toPathTolens, toPathTolens, config.defaultL ) ( s )
+    conditionalCopyCommandProcessor ( toPathTolens, toPathTolens, toPathTolens, config.defaultL ) ( s ),
+    copyAndParseIntCommandProcessor ( toPathTolens, toPathTolens, config.defaultL ) ( s )
   );
 };
 
