@@ -185,15 +185,10 @@ export const copyAndParseIntCommandProcessor = <S> (
   fromPathToLens: ( path: string ) => Optional<S, any>,
   toPathToLens: ( path: string ) => Optional<S, any>,
   defaultLens: Optional<S, any> ) => ( s: S ): ChangeCommandProcessor<S> =>
-  ( c ) => {
-    console.log('IsCopyAndParseIntCommand: ', isCopyAndParseIntCommand ( c ))
-    const myValue = isCopyAndParseIntCommand ( c ) && (c.from ? fromPathToLens ( c.from ) : defaultLens).getOption ( s )
-    console.log('copyAndParseIntCommandProcessor', myValue)
-    console.log('copyAndParseIntCommandProcessor > PARSEINT', Number.parseFloat(myValue))
-    return isCopyAndParseIntCommand ( c )
+  ( c ) => isCopyAndParseIntCommand ( c )
       ? [ [ c.to ? toPathToLens ( c.to ) : defaultLens, () => Number.parseFloat((c.from ? fromPathToLens ( c.from ) : defaultLens).getOption ( s )) ] ]
       : undefined;
-  }
+
 
 
 export interface StrictCopyCommand extends ChangeCommand {

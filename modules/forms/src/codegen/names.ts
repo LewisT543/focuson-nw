@@ -1,13 +1,12 @@
-import { AllDataDD, CompDataD, compDataDIn } from "../common/dataD";
-import { MainPageD, ModalPageD, PageD, RefD, RestDefnInPageProperties } from "../common/pageD";
-import { RestD } from "../common/restD";
-import { rawTypeName } from "./makeGraphQlTypes";
-import { HasName, isRestStateChange, RestAction, safeString } from "@focuson-nw/utils";
-import { JavaWiringParams, TSParams } from "./config";
-import { TableAndFieldAndAliasData } from "./makeSqlFromEntities";
-import { restActionForName, restActionToDetails } from "@focuson-nw/rest";
-import { isMessageMutation, MutationDetail } from "../common/resolverD";
-import { Ref } from "react";
+import {AllDataDD, CompDataD, compDataDIn} from "../common/dataD";
+import {MainPageD, ModalPageD, PageD, RefD, RestDefnInPageProperties} from "../common/pageD";
+import {RestD} from "../common/restD";
+import {rawTypeName} from "./makeGraphQlTypes";
+import {HasName, isRestStateChange, RestAction, safeString} from "@focuson-nw/utils";
+import {JavaWiringParams, TSParams} from "./config";
+import {TableAndFieldAndAliasData} from "./makeSqlFromEntities";
+import {restActionForName, restActionToDetails} from "@focuson-nw/rest";
+import {isMessageMutation, MutationDetail} from "../common/resolverD";
 
 export const guardName = ( s: string ) => s + "Guard"
 export const domainName = <G> ( d: CompDataD<G> ): string => d.name + "Domain";
